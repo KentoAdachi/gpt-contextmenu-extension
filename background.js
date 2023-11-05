@@ -43,9 +43,11 @@ async function handleContextMenuClick(info, tab) {
   if (!systemPrompt) return;
 
   const selectedText = info.selectionText;
+  console.log("selectedText:", selectedText);
+  console.log("systemPrompt:", systemPrompt);
   try {
     const responseText = await getChatGPTResponse(
-      "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",
+      "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",
       systemPrompt,
       selectedText
     );
