@@ -3,8 +3,14 @@
     "name": "context-menu-chatGPT" ,
     "version": "0.1" ,
     "description": "コンテキストメニューから選択したテキストをchatGPTに送信し、返答を表示するChrome拡張機能です。",
-    "permissions": ["contextMenus", "scripting","activeTab"],
+    "permissions": ["contextMenus","scripting","activeTab","storage"],
     "background": {
       "service_worker": "background.js"
-    }
+    },
+    "options_ui": {
+      "page": "options.html"
+    },
+    "action": {
+      "default_popup": "options.html"
+  }
 }
