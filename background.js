@@ -1,5 +1,5 @@
 // コンテキストメニュー表示名とプロンプトの配列
-const contextMenuItems = [
+const defaultContextMenuItems = [
   {
     contextMenuName: "日本語に翻訳する",
     prompt: "Translate the following English text to Japanese:",
@@ -14,8 +14,17 @@ const contextMenuItems = [
   },
 ];
 
+// chrome.storage.localに保存されたユーザー設定のコンテキストメニューを取得する
+async function fetchUserContextMenuItems() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(["contextMenuItems"], function (data) {
+      resolve(data.contextMenuItems);
+    });
+  });
+}
+
 // chrome.storage.localに保存された設定を取得する
-async function getOptions() {
+async function fetchOptions() {
   return new Promise((resolve) => {
     chrome.storage.local.get(["apiKey", "gptVersion"], function (data) {
       resolve(data);
@@ -57,6 +66,12 @@ async function getChatGPTResponse(
 
 // Context Menu
 async function handleContextMenuClick(info, tab) {
+  // ユーザー設定のコンテキストメニューを取得する
+  const userContextMenuItems = await fetchUserContextMenuItems();
+
+  // デフォルトのコンテキストメニューとユーザー設定のコンテキストメニューを結合する
+  const contextMenuItems = defaultContextMenuItems.concat(userContextMenuItems);
+
   // idに対応したプロンプトをセットする、セットできない場合はreturn
   const systemPrompt = contextMenuItems[Number(info.menuItemId)]?.prompt;
   if (!systemPrompt) {
@@ -67,7 +82,7 @@ async function handleContextMenuClick(info, tab) {
   console.log("systemPrompt:", systemPrompt);
 
   // chrome.storage.localに保存された設定を取得する
-  const { apiKey, gptVersion } = await getOptions();
+  const { apiKey, gptVersion } = await fetchOptions();
 
   // もしAPIキーが設定されていない場合は、オプションページを開く
   if (!apiKey) {
@@ -97,14 +112,26 @@ function showAlert(responseText) {
   window.alert(responseText);
 }
 
-function setupContextMenu() {
-  contextMenuItems.forEach((item, index) => {
+async function setupContextMenu() {
+  defaultContextMenuItems.forEach((item, index) => {
     chrome.contextMenus.create({
       id: index.toString(),
       title: item.contextMenuName,
       contexts: ["selection"],
     });
   });
+
+  // chrome.storage.localに保存されたユーザー設定のコンテキストメニューを取得する
+  const userContextMenuItems = await fetchUserContextMenuItems();
+  if (userContextMenuItems) {
+    userContextMenuItems.forEach((item, index) => {
+      chrome.contextMenus.create({
+        id: (index + defaultContextMenuItems.length).toString(),
+        title: item.contextMenuName,
+        contexts: ["selection"],
+      });
+    });
+  }
 }
 
 console.log("background.js");
