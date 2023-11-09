@@ -1,4 +1,4 @@
-# context-gpt-extension
+# ContextMenuGPTweaks
 
 コンテキストメニューから選択したテキストをchatGPTに送信し、返答を表示するChrome拡張機能です。
 
