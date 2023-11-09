@@ -112,7 +112,7 @@ function showAlert(responseText) {
   window.alert(responseText);
 }
 
-async function setupContextMenu() {
+async function updateContextMenu() {
   defaultContextMenuItems.forEach((item, index) => {
     chrome.contextMenus.create({
       id: index.toString(),
@@ -137,7 +137,7 @@ async function setupContextMenu() {
 console.log("background.js");
 chrome.runtime.onInstalled.addListener(() => {
   console.log("onInstalled....");
-  setupContextMenu();
+  updateContextMenu();
 });
 
 chrome.contextMenus.onClicked.addListener(handleContextMenuClick);
