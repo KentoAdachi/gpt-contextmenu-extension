@@ -1,3 +1,37 @@
+// コンテキストメニュー表示名とプロンプトの配列
+const defaultContextMenuItems = [
+  {
+    contextMenuName: "日本語に翻訳する",
+    prompt: "Translate the following English text to Japanese:",
+  },
+  {
+    contextMenuName: "レビューする",
+    prompt: "コードをレビューして、改善点を簡潔にまとめてください。",
+  },
+  {
+    contextMenuName: "コードの説明",
+    prompt: "簡潔にコードの説明をしてください。",
+  },
+];
+
+// chrome.storage.localに保存されたユーザー設定のコンテキストメニューを取得する
+async function fetchUserContextMenuItems() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(["contextMenuItems"], function (data) {
+      resolve(data.contextMenuItems);
+    });
+  });
+}
+
+// chrome.storage.localに保存された設定を取得する
+async function fetchOptions() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(["apiKey", "gptVersion"], function (data) {
+      resolve(data);
+    });
+  });
+}
+
 // chatGPT API
 async function getChatGPTResponse(
   API_KEY,
@@ -32,24 +66,36 @@ async function getChatGPTResponse(
 
 // Context Menu
 async function handleContextMenuClick(info, tab) {
-  // idごとに対応したプロンプトを用意する
-  const prompts = {
-    translate: "Translate the following English text to Japanese:",
-    review: "コードをレビューして、改善点を簡潔にまとめてください。",
-  };
+  // ユーザー設定のコンテキストメニューを取得する
+  const userContextMenuItems = await fetchUserContextMenuItems();
+
+  // デフォルトのコンテキストメニューとユーザー設定のコンテキストメニューを結合する
+  const contextMenuItems = defaultContextMenuItems.concat(userContextMenuItems);
 
   // idに対応したプロンプトをセットする、セットできない場合はreturn
-  const systemPrompt = prompts[info.menuItemId];
-  if (!systemPrompt) return;
-
+  const systemPrompt = contextMenuItems[Number(info.menuItemId)]?.prompt;
+  if (!systemPrompt) {
+    return;
+  }
   const selectedText = info.selectionText;
   console.log("selectedText:", selectedText);
   console.log("systemPrompt:", systemPrompt);
+
+  // chrome.storage.localに保存された設定を取得する
+  const { apiKey, gptVersion } = await fetchOptions();
+
+  // もしAPIキーが設定されていない場合は、オプションページを開く
+  if (!apiKey) {
+    chrome.runtime.openOptionsPage();
+    return;
+  }
+
   try {
     const responseText = await getChatGPTResponse(
-      "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",
+      apiKey,
       systemPrompt,
-      selectedText
+      selectedText,
+      gptVersion
     );
 
     chrome.scripting.executeScript({
@@ -66,24 +112,32 @@ function showAlert(responseText) {
   window.alert(responseText);
 }
 
-function setupContextMenu() {
-  chrome.contextMenus.create({
-    id: "translate",
-    title: "日本語に翻訳する",
-    contexts: ["selection"],
+async function updateContextMenu() {
+  defaultContextMenuItems.forEach((item, index) => {
+    chrome.contextMenus.create({
+      id: index.toString(),
+      title: item.contextMenuName,
+      contexts: ["selection"],
+    });
   });
 
-  chrome.contextMenus.create({
-    id: "review",
-    title: "レビューする",
-    contexts: ["selection"],
-  });
+  // chrome.storage.localに保存されたユーザー設定のコンテキストメニューを取得する
+  const userContextMenuItems = await fetchUserContextMenuItems();
+  if (userContextMenuItems) {
+    userContextMenuItems.forEach((item, index) => {
+      chrome.contextMenus.create({
+        id: (index + defaultContextMenuItems.length).toString(),
+        title: item.contextMenuName,
+        contexts: ["selection"],
+      });
+    });
+  }
 }
 
 console.log("background.js");
 chrome.runtime.onInstalled.addListener(() => {
   console.log("onInstalled....");
-  setupContextMenu();
+  updateContextMenu();
 });
 
 chrome.contextMenus.onClicked.addListener(handleContextMenuClick);

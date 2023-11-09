@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Options</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: sans-serif;
+      width: 400px; 
+    }
+  </style>
+</head>
+<body>
+  <h1>Context Menu Tweaks</h1>
+  
+  <div>
+    <label for="apiKey">API Key:</label>
+    <input type="password" id="apiKey">
+  </div>
+  
+  <div>  
+    <label for="gptVersion">GPT Version:</label>
+    <select id="gptVersion">
+      <option value="gpt-3.5-turbo" selected>GPT-3.5-Turbo</option>
+      <option value="gpt-4">GPT-4</option>
+    </select>
+  </div>
+
+  <button id="saveButton">保存</button>
+  
+
+  <h2 for="contextMenuName">User Setting Context Menu</h2>
+  <table id="menu-table">
+    <thead>
+      <tr>
+        <th>Context Menu Name</th>
+        <th>Prompt</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Table rows will be added here by JavaScript -->
+    </tbody>
+  </table>
+
+
+  
+  <div>
+    
+    <input type="text" id="contextMenuName" placeholder="コンテキストメニュー名">
+    <input type="text" id="prompt" placeholder="プロンプト">
+
+    <button id="savePrompt">add</button>
+    <button id="clearContextMenus">clear</button>
+    
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
