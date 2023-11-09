@@ -1,6 +1,6 @@
 {
     "manifest_version": 3 ,
-    "name": "context-menu-chatGPT" ,
+    "name": "ContextMenuGPTweaks" ,
     "version": "0.1" ,
     "description": "コンテキストメニューから選択したテキストをchatGPTに送信し、返答を表示するChrome拡張機能です。",
     "permissions": ["contextMenus","scripting","activeTab","storage"],
