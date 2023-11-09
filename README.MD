@@ -1,6 +1,5 @@
 # context-gpt-extension
 
-## 概要
 コンテキストメニューから選択したテキストをchatGPTに送信し、返答を表示するChrome拡張機能です。
 
 ![Alt text](img/image.png)
