@@ -3,9 +3,10 @@
 コンテキストメニューから選択したテキストをchatGPTに送信し、返答を表示するChrome拡張機能です。
 
 ## screenshots
-<img src="img/image.png" alt="Alt text" width="600"/>
-
-<div style="display: flex;">
+<div style="text-align: center;">
+  <img src="img/image.png" alt="Alt text" width="600"/>
+</div>
+<div style="display: flex;align-items: center;justify-content: center;">
     <img src="img/image-1.png" alt="Alt text" width="300"/>
     <img src="img/image-2.png" alt="Alt text" width="300"/>
 </div>
